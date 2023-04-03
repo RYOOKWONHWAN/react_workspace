@@ -1,0 +1,3 @@
+SOP(Same-Origin Policy) vs CORS(Cross-Origin Resource Sharing)
+
+fetch vs axios
