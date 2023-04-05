@@ -16,6 +16,12 @@ const boardSlice = createSlice({
       state.boardList = action.payload.data.alist;
       state.pv = action.payload.data.pv;
     },
+    getBoardDetail(state, action) {
+      state.boardDetail = action.payload.data;
+    },
+    getBoardDownload(state, action) {
+      state.boardFile = action.payload.data;
+    },
   },
 });
 // 이걸 이용해서 함수명 자동완성을 할 수 있다.

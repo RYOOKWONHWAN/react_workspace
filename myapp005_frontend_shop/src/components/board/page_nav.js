@@ -13,23 +13,22 @@ const PageNavigation = ({ getBoardList }) => {
     <nav aria-label='...'>
       <ul className='pagination'>
         <li className={pv.startPage <= 1 ? 'page-item disabled' : 'page-item'}>
-          <a
-            href='#!'
+          <span
             className='page-link'
             onClick={() => getBoardList(pv.startPage - pv.blockPage)}
           >
             &laquo;
-          </a>
+          </span>
         </li>
         {PageNumber.map((pnum, idx) => (
           <li
+            key={pnum}
             className={pv.currentPage === pnum ? 'page-item active' : null}
             aria-current={pv.currentPage === pnum ? 'page' : null}
-            key={pnum}
           >
-            <a href='#!' onClick={() => getBoardList(pnum)}>
-              <span className='page-link'>{pnum}</span>
-            </a>
+            <span className='page-link' onClick={() => getBoardList(pnum)}>
+              {pnum}
+            </span>
           </li>
         ))}
         <li
@@ -37,13 +36,12 @@ const PageNavigation = ({ getBoardList }) => {
             pv.endPage >= pv.totalPage ? 'page-item disabled' : 'page-item'
           }
         >
-          <a
-            href='#!'
+          <span
             className='page-link'
             onClick={() => getBoardList(pv.startPage + pv.blockPage)}
           >
             &raquo;
-          </a>
+          </span>
         </li>
       </ul>
     </nav>

@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { boardActions } from '../../redux/actions/board_action';
 import { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import TableRow from './table_row';
 import PageNavigation from './page_nav';
 
@@ -24,6 +24,9 @@ const BoardList = () => {
   }, []);
   return (
     <div>
+      <Link className='btn btn-danger' to='/board/write'>
+        글쓰기
+      </Link>
       <h3 className='text-center'>게시판 목록</h3>
 
       <table className='table table-striped' style={{ marginTop: 20 }}>
