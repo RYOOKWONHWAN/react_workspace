@@ -9,11 +9,17 @@ const BoardView = () => {
   const boardDetail = useSelector((state) => state.board.boardDetail);
   const pv = useSelector((state) => state.board.pv);
   const navigator = useNavigate();
-
+  const config = {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      Authorization: localStorage.getItem('Authorization'),
+    },
+  };
   useEffect(() => {
-    dispatch(boardActions.getBoardDetail(num));
-  }, []);
+    dispatch(boardActions.getBoardDetail(num, config));
+  }, [dispatch, num]);
   //download
+
   const handleDownload = async () => {
     const boardFile = await dispatch(
       boardActions.getBoardDownload(boardDetail.upload)
@@ -38,7 +44,15 @@ const BoardView = () => {
   };
   const handleDelete = (e) => {
     e.preventDefault();
-    dispatch(boardActions.getBoardDelete(num));
+    console.log(boardDetail.membersDTO);
+
+    dispatch(
+      boardActions.getBoardDelete(num, {
+        headers: {
+          Authorization: localStorage.getItem('Authorization'),
+        },
+      })
+    );
     navigator(`/board/list/${pv.currenPage}`);
   };
   return (
@@ -46,9 +60,13 @@ const BoardView = () => {
       <table className='table table-striped' style={{ marginTop: 20 }}>
         <tbody>
           <tr>
-            <th width='20'>글쓴이</th>
-            <td>{boardDetail.reg_date}</td>
-            <th width='20'>조회수</th>
+            <th width='20%'>글쓴이</th>
+            <td>
+              {boardDetail['membersDTO']
+                ? boardDetail['membersDTO']['memberName']
+                : null}
+            </td>
+            <th width='20%'>조회수</th>
             <td>{boardDetail.readcount}</td>
           </tr>
           <tr>
@@ -85,14 +103,18 @@ const BoardView = () => {
       <Link className='btn btn-primary' to={`/board/write/${boardDetail.num}`}>
         답변
       </Link>
-
-      <Link className='btn btn-primary' to={`/board/update/${num}`}>
-        수정
-      </Link>
-
-      <button className='btn btn-primary' onClick={handleDelete}>
-        삭제
-      </button>
+      {localStorage.getItem('memberEmail') ===
+      (boardDetail.memberEmail ? boardDetail.memberEmail : null) ? (
+        <>
+          {' '}
+          <Link className='btn btn-primary' to={`/board/update/${num}`}>
+            수정
+          </Link>
+          <button className='btn btn-primary' onClick={handleDelete}>
+            삭제
+          </button>
+        </>
+      ) : null}
     </div>
   );
 };

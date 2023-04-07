@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 
 const TableRow = (props) => {
   const { board } = props;
+
   return (
     <tr>
       <td>{board.num}</td>
@@ -19,7 +20,7 @@ const TableRow = (props) => {
         ) : null}
         <Link to={`/board/view/${board.num}`}>{board.subject}</Link>
       </td>
-      <td>{board.reg_date}</td>
+      <td>{board['membersDTO'] ? board['membersDTO']['memberName'] : null}</td>
       <td>{board.readcount}</td>
     </tr>
   );

@@ -33,11 +33,14 @@ const BoardWrite = () => {
     setInputs({ ...inputs, [e.target.name]: e.target.files[0] });
   };
   const boardDetail = useSelector((state) => state.board.boardDetail);
+
   const onSubmit = async (e) => {
     e.preventDefault();
     const formdata = new FormData();
+
     formdata.append('subject', subject);
     formdata.append('content', content);
+    formdata.append('memberEmail', localStorage.getItem('memberEmail'));
     if (filename != null) {
       formdata.append('filename', filename);
     }
@@ -50,9 +53,10 @@ const BoardWrite = () => {
     const config = {
       headers: {
         'Content-Type': 'multipart/form-data',
+        Authorization: localStorage.getItem('Authorization'),
       },
     };
-
+    console.log(localStorage.getItem('Authorization'));
     await dispatch(boardActions.getBoardWrite(formdata, config));
     setInputs({
       subject: '',
@@ -69,6 +73,17 @@ const BoardWrite = () => {
       <form onSubmit={onSubmit}>
         <table>
           <tbody>
+            <tr>
+              <td>이메일</td>
+              <td>
+                <input
+                  type='text'
+                  readOnly
+                  value={localStorage.getItem('memberEmail')}
+                  name='memberEmail'
+                />
+              </td>
+            </tr>
             <tr>
               <td width='20%' align='center'>
                 제목

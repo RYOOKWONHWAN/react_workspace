@@ -17,9 +17,28 @@ const LoginPage = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
     await axios
-      .post(`${baseUrl}/member/login`, inputs, config)
+      .post(`${baseUrl}/login`, inputs, config)
       .then((response) => {
         console.log(response.data);
+        let jwtToken = response.headers.get('Authorization');
+        console.log(jwtToken);
+        let jwtMemberName = response.data.memberName;
+        let jwtAuthRole = response.data.authRole;
+        let jwtMemberEmail = response.data.memberEmail;
+
+        localStorage.setItem('Authorization', jwtToken);
+
+        localStorage.setItem('memberEmail', jwtMemberEmail);
+        localStorage.setItem('memberName', jwtMemberName);
+        localStorage.setItem('authRole', jwtAuthRole);
+        localStorage.setItem('isLogin', 'true');
+        setInputs({ memberEmail: '', memberPass: '' });
+      })
+      .then((response) => {
+        window.location.replace('/');
+      })
+      .catch((err) => {
+        console.error(err.message);
       });
   };
   return (
