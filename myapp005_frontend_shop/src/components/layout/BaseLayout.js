@@ -24,7 +24,7 @@ function BaseLayout() {
                   <NavLink
                     style={activeStyle}
                     className='nav-link'
-                    to='/editinfo'
+                    to='/member/editinfo'
                   >
                     {localStorage.getItem('memberName') + '  EDITINFO'}
                   </NavLink>

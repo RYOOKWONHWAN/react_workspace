@@ -1,140 +1,133 @@
+import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { memberActions } from '../../redux/actions/member_action';
+import { baseUrl } from '../../apiurl';
+
+// get 방식으로 유저 정보를 불러옴
 
 const EditInfo = () => {
   const navigator = useNavigate();
-  const dispatch = useDispatch();
-  const [inputs, setInputs] = useState({
+  const [members, setMembers] = useState({
     memberEmail: '',
-    memberName: '',
     memberPass: '',
+    memberName: '',
+    memberPhone: '',
   });
 
-  useEffect(() => {}, []);
-  const { memberEmail, memberName, memberPass } = inputs;
+  const { memberName, memberPass } = members;
+
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: localStorage.getItem('Authorization'),
+    },
+  };
+
+  const info = async () => {
+    return await axios
+      .get(
+        `${baseUrl}/member/editinfo/${localStorage.getItem('memberEmail')}`,
+        config
+      )
+      .then((response) => setMembers({ ...response.data, memberPass: '' }));
+  };
+
+  useEffect(() => {
+    info();
+  }, []);
+
+  const [passwordCheck, setPasswordCheck] = useState('');
+
+  const passChange = (e) => {
+    e.preventDefault();
+    if (memberPass !== e.target.value) {
+      setPasswordCheck('비밀번호 불일치');
+    } else {
+      setPasswordCheck('비밀번호 일치');
+    }
+  };
 
   const handleValueChange = (e) => {
     e.preventDefault();
-    let nextState = {};
-    nextState[e.target.name] = e.target.value;
-    setInputs((prev) => {
-      return { ...prev, ...nextState };
-    });
+    setMembers({ ...members, [e.target.name]: e.target.value });
   };
-  const handleUpdate = async (e) => {
+
+  const onSubmit = async (e) => {
     e.preventDefault();
-
-    const formData = new FormData();
-    formData.append('memberEmail', localStorage.getItem('memberEmail'));
-    formData.append('memberName', memberName);
-    formData.append('memberPass', memberPass);
-    formData.append('memberPhone', memberPass);
-
-    const config = {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: localStorage.getItem('Authorization'),
-      },
-    };
-
-    await dispatch(memberActions.getMemberUpdate(formData, config));
-
-    setInputs({
-      memberEmail: '',
-      memberName: '',
-      memberPass: '',
-    });
+    if (!memberPass) {
+      alert('비밀번호를 입력하세요');
+      return;
+    }
+    await axios
+      // post 방식으로 전송 (URL, 데이터, 폼 type)
+      .post(`${baseUrl}/member/update`, members, config);
     localStorage.setItem('memberName', memberName);
-
     window.location.replace('/');
   };
 
-  const handleReset = (e) => {
-    e.preventDefault();
-    setInputs({
-      memberEmail: '',
-      memberName: '',
-      memberPass: '',
-    });
-  };
-
-  const handleBack = (e) => {
-    e.preventDefault();
-    navigator(-1);
-  };
   return (
-    <form name='frm'>
-      <table className='table table-striped' style={{ marginTop: 20 }}>
-        <tbody>
-          <tr>
-            <th width='20%'>메일</th>
-            <td>
-              {' '}
-              <textarea
-                name='memberEmail'
-                id='memberEmail'
-                readOnly
-                rows='1'
-                cols='20'
-                value={localStorage.getItem('memberEmail')}
-                onChange={handleValueChange}
-              ></textarea>
-            </td>
-          </tr>
+    <div className='container'>
+      <form onSubmit={onSubmit}>
+        <div className='container'>
+          <h1>정보수정</h1>
+          <div className='form-group mb-1'>
+            <input
+              type='email'
+              className='form-control'
+              name='memberEmail'
+              placeholder='이메일'
+              value={localStorage.memberEmail} // 로컬 스토리지의 멤버 이메일
+              readOnly
+            />
+          </div>
+          <div className='form-group mb-1'>
+            <input
+              type='password'
+              className='form-control'
+              name='memberPass'
+              placeholder='비밀번호'
+              onChange={handleValueChange}
+            />
+          </div>
+          <div className='form-group mb-1'>
+            <input
+              type='password'
+              className='form-control'
+              name='memberPass2'
+              placeholder='비밀번호확인'
+              onChange={passChange}
+            />
+            <span>{passwordCheck}</span>
+          </div>
+          <div className='form-group mb-1'>
+            <input
+              type='text'
+              className='form-control'
+              name='memberName'
+              placeholder='이름'
+              value={members.memberName}
+              onChange={handleValueChange}
+            />
+          </div>
 
-          <tr>
-            <th>이름</th>
-            <td colSpan='3'>
-              {' '}
-              <textarea
-                name='memberName'
-                id='memberName'
-                rows='1'
-                cols='20'
-                onChange={handleValueChange}
-              ></textarea>
-            </td>
-          </tr>
-          <tr>
-            <th>전화번호</th>
-            <td colSpan='3'>
-              {' '}
-              <textarea
-                name='memberPhone'
-                id='memberPhone'
-                rows='1'
-                cols='20'
-                onChange={handleValueChange}
-              ></textarea>
-            </td>
-          </tr>
-          <tr>
-            <th>비밀번호</th>
-            <td colSpan='3'>
-              {' '}
-              <textarea
-                name='memberPass'
-                id='memberPass'
-                rows='1'
-                cols='20'
-                onChange={handleValueChange}
-              ></textarea>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <button className='btn btn-primary' onClick={handleUpdate}>
-        수정
-      </button>
-      <button className='btn btn-primary' onClick={handleReset}>
-        취소
-      </button>
-      <button className='btn btn-primary' onClick={handleBack}>
-        뒤로
-      </button>
-    </form>
+          <div className='form-group mb-1'>
+            <input
+              type='text'
+              className='form-control'
+              name='memberPhone'
+              placeholder='연락처'
+              value={members.memberPhone}
+              onChange={handleValueChange}
+            />
+          </div>
+
+          <button type='submit' className='btn btn-primary'>
+            회원정보 수정
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
+
 export default EditInfo;

@@ -28,7 +28,7 @@ function App() {
             element={<PrivateRoute isAuth={true} RouteComponent={LogOut} />}
           />
           <Route
-            path='editinfo'
+            path='member/editinfo'
             element={<PrivateRoute isAuth={true} RouteComponent={EditInfo} />}
           />
           <Route
